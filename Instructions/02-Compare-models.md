@@ -1,6 +1,7 @@
 ---
 lab:
   title: 모델 카탈로그에서 언어 모델 비교
+  description: 생성형 AI 프로젝트에 적합한 모델을 비교하여 선택하는 방법을 알아봅니다.
 ---
 
 ## 모델 카탈로그에서 언어 모델 비교
@@ -9,7 +10,7 @@ lab:
 
 이 연습에서는 Azure AI 파운드리 포털의 모델 카탈로그를 통해 두 언어 모델을 비교합니다.
 
-이 연습은 약 **25**분 정도 소요됩니다.
+이 연습은 약 **30**분 정도 소요됩니다.
 
 ## 시나리오
 
@@ -31,6 +32,10 @@ Azure AI 파운드리 포털을 통해 Azure AI 허브 및 프로젝트를 수�
 
     > **참고**: 이전에 *Bash* 환경을 사용하는 Cloud Shell을 만든 경우 ***PowerShell***로 전환합니다.
 
+1. Cloud Shell 도구 모음의 **설정** 메뉴에서 **클래식 버전으로 이동**을 선택합니다.
+
+    **<font color="red">계속하기 전에 Cloud Shell의 클래식 버전으로 전환했는지 확인합니다.</font>**
+
 1. PowerShell 창에서 다음 명령을 입력하여 이 연습의 리포지토리를 복제합니다.
 
      ```powershell
@@ -50,7 +55,7 @@ Azure AI 파운드리 포털을 통해 Azure AI 허브 및 프로젝트를 수�
 1. 다음으로, 다음 명령을 입력하여 시작 템플릿을 실행합니다. 종속 리소스, AI 프로젝트, AI 서비스 및 온라인 엔드포인트를 사용하여 AI 허브를 프로비전합니다. 또한 GPT-4 Turbo, GPT-4o 및 GPT-4o mini 모델을 배포합니다.
 
      ```powershell
-    azd up  
+    azd up
      ```
 
 1. 메시지가 표시되면 사용할 구독을 선택한 다음 리소스 프로비전에 대해 다음 위치 중 하나를 선택합니다.
@@ -78,20 +83,11 @@ Azure AI 파운드리 포털을 통해 Azure AI 허브 및 프로젝트를 수�
         </ul>
     </details>
 
-1. 모든 리소스가 프로비전되면 다음 명령을 사용하여 엔드포인트 및 액세스 키를 AI 서비스 리소스로 가져옵니다. `<rg-env_name>` 및 `<aoai-xxxxxxxxxx>`(을)를 리소스 그룹 및 AI 서비스 리소스의 이름으로 바꿔야 한다는 점에 유의합니다. 둘 다 배포의 출력에 인쇄됩니다.
-
-     ```powershell
-    Get-AzCognitiveServicesAccount -ResourceGroupName <rg-env_name> -Name <aoai-xxxxxxxxxx> | Select-Object -Property endpoint
-    Get-AzCognitiveServicesAccountKey -ResourceGroupName <rg-env_name> -Name <aoai-xxxxxxxxxx> | Select-Object -Property Key1
-     ```
-
-1. 이러한 값은 나중에 사용될 때 복사합니다.
-
 ## 모델 비교
 
 유추 인프라가 Azure에서 완전히 관리되는 입력으로 이미지를 허용하는 세 가지 모델이 있다는 것을 알고 계실 것입니다. 이제 두 가지를 비교하여 어떤 것이 사용 사례에 적합한지 결정해야 합니다.
 
-1. 웹 브라우저에서 [Azure AI Foundry 포털](https://ai.azure.com)(`https://ai.azure.com`)을 열고 Azure 자격 증명을 사용하여 로그인합니다.
+1. 새 브라우저 탭의 `https://ai.azure.com`에서 [Azure AI 파운드리 포털](https://ai.azure.com)을 열고 Azure 자격 증명을 사용하여 로그인합니다.
 1. 메시지가 표시되면 이전에 만든 AI 프로젝트를 선택합니다.
 1. 왼쪽 메뉴를 사용하여 **모델 카탈로그** 페이지로 이동합니다.
 1. **모델 비교**(검색창에서 필터 옆에 있는 버튼을 찾습니다)를 선택합니다.
@@ -107,14 +103,95 @@ Azure AI 파운드리 포털을 통해 Azure AI 허브 및 프로젝트를 수�
 
 벤치마크 메트릭 정확도는 공개적으로 사용 가능한 제네릭 데이터 세트를 기반으로 계산됩니다. 플롯에서 토큰당 비용이 가장 높지만 정확도가 가장 높지는 않으므로 모델 중 하나를 이미 필터링할 수 있습니다. 결정을 내리기 전에 사용 사례와 관련된 나머지 두 모델의 출력 품질을 살펴보겠습니다.
 
-## 로컬 개발 환경 설정
+## Cloud Shell에서 개발 환경 설정
 
-빠르게 실험하고 반복하려면 VS(Visual Studio) Code에서 Python 코드가 포함된 Notebook을 사용합니다. 로컬 아이디어 발상에 사용할 수 있도록 VS Code를 준비해 보겠습니다.
+신속하게 실험해보고 반복하려면 Cloud Shell에서 Python 스크립트 집합을 사용합니다.
 
-1. VS Code를 열고 **복제**하여 다음 Git 리포지토리([https://github.com/MicrosoftLearning/mslearn-genaiops.git](https://github.com/MicrosoftLearning/mslearn-genaiops.git))를 만듭니다.
-1. 로컬 드라이브에 복제본을 저장하고 복제한 후 폴더를 엽니다.
-1. VS Code 탐색기(왼쪽 창)에서 **Files/02** 폴더에 있는 **02-Compare-models.ipynb** Notebook을 엽니다.
-1. Notebook의 모든 셀을 실행합니다.
+1. Azure AI 파운드리 포털에서 프로젝트의 **개요** 페이지를 봅니다.
+1. **프로젝트 세부 정보** 영역에서 **프로젝트 연결 문자열**을 확인합니다.
+1. 메모장에 문자열을 저장합니다. 이 연결 문자열 사용하여 클라이언트 응용 프로그램에서 프로젝트에 연결합니다.
+1. Azure Portal 탭으로 돌아가서 Cloud Shell을 열고(이전에 닫은 경우) 다음 명령을 실행하여 이 연습에 사용된 코드 파일이 있는 폴더로 이동합니다.
+
+     ```powershell
+    cd ~/mslearn-genaiops/Files/02/
+     ```
+
+1. Cloud Shell 명령줄 창에서 다음 명령을 입력하여 필요한 라이브러리를 설치합니다.
+
+    ```powershell
+   python -m venv labenv
+   ./labenv/bin/Activate.ps1
+   pip install python-dotenv azure-identity azure-ai-projects openai matplotlib
+    ```
+
+1. 제공된 구성 파일을 열려면 다음 명령을 입력합니다.
+
+    ```powershell
+   code .env
+    ```
+
+    코드 편집기에서 파일이 열립니다.
+
+1. 코드 파일에서 **your_project_connection_string** 자리 표시자를 프로젝트의 연결 문자열로 바꿉니다(Azure AI 파운드리 포털의 프로젝트 **개요** 페이지에서 복사함). 연습에 사용된 첫 번째 및 두 번째 모델이 각각 **gpt-4o** 및 **gpt-4o-mini**인지 확인합니다.
+1. 자리 표시자를 바꾼 *후* 코드 편집기에서 **CTRL+S** 명령 또는 **마우스 오른쪽 단추 클릭 > 저장**을 사용하여 변경 내용을 저장한 다음, **CTRL+Q** 명령 또는 **마우스 오른쪽 단추 클릭 > 끝내기**를 사용하여 Cloud Shell 명령줄을 열어둔 채 코드 편집기를 닫습니다.
+
+## 배포된 모델에 프롬프트 보내기
+
+이제 배포된 모델에 다른 프롬프트를 보내는 여러 스크립트를 실행합니다. 이러한 상호 작용은 나중에 Azure Monitor에서 관찰할 수 있는 데이터를 생성합니다.
+
+1. 제공된 **첫 번째 스크립트를 보려면** 다음 명령을 실행합니다.
+
+    ```powershell
+   code model1.py
+    ```
+
+스크립트는 이 연습에 사용된 이미지를 데이터 URL로 인코딩합니다. 이 URL은 첫 번째 텍스트 프롬프트와 함께 채팅 완성 요청에 직접 이미지를 포함하는 데 사용됩니다. 다음으로, 스크립트는 모델의 응답을 출력하고 채팅 기록에 추가한 다음, 두 번째 프롬프트를 제출합니다. 두 번째 프롬프트는 나중에 관찰된 메트릭을 더 중요하게 인식하도록 하기 위해 제출되고 저장되지만 코드의 선택적 섹션에 대한 주석 처리를 제거하여 두 번째 응답도 출력으로 사용할 수 있습니다.
+
+1. 코드 편집기 아래의 Cloud Shell 명령줄 창에서 다음 명령을 입력하여 **첫 번째** 스크립트를 실행합니다.
+
+    ```powershell
+   python model1.py
+    ```
+
+    모델은 추가 분석을 위해 Application Insights로 캡처되는 응답을 생성합니다. 두 번째 모델을 사용하여 차이점을 살펴보겠습니다.
+
+1. 코드 편집기 아래의 Cloud Shell 명령줄 창에서 다음 명령을 입력하여 **두 번째** 스크립트를 실행합니다.
+
+    ```powershell
+   python model2.py
+    ```
+
+    이제 두 모델의 출력이 어떤 방식으로 다른가요?
+
+    > **참고**: 필요에 따라 코드 블록을 복사하고, 명령 `code your_filename.py`를 실행하고, 편집기에서 코드를 붙여넣고, 파일을 저장한 다음, 명령 `python your_filename.py`를 실행하여 답변으로 지정된 스크립트를 테스트할 수 있습니다. 스크립트가 성공적으로 실행된 경우 다운로드하거나 `download imgs/gpt-4o.jpg` 또는 `download imgs/gpt-4o-mini.jpg`를 사용하여 다운로드 할 수 있는 저장된 이미지가 생성됩니다.
+
+## 모델의 토큰 사용량 비교
+
+마지막으로 각 모델에 대해 시간에 따라 처리된 토큰 수를 그림으로 그리는 세 번째 스크립트를 실행합니다. 이 데이터는 Azure Monitor에서 가져옵니다.
+
+1. 마지막 스크립트를 실행하기 전에 Azure Portal에서 Azure AI 서비스의 리소스 ID를 복사해야 합니다. Azure AI Services 리소스의 개요 페이지로 이동하여 **JSON 보기**를 선택합니다. 리소스 ID를 복사하고 코드 파일의 `your_resource_id` 자리 표시자를 바꿉니다.
+
+    ```powershell
+   code plot.py
+    ```
+
+1. 변경 내용을 저장합니다.
+
+1. 코드 편집기 아래의 Cloud Shell 명령줄 창에서 다음 명령을 입력하여 **세 번째** 스크립트를 실행합니다.
+
+    ```powershell
+   python plot.py
+    ```
+
+1. 스크립트가 완료되면 다음 명령을 입력하여 메트릭 플롯을 다운로드합니다.
+
+    ```powershell
+   download imgs/plot.png
+    ```
+
+## 결론
+
+플롯을 검토하고 이전에 관찰된 정확도 및 비용 차트의 벤치마크 값을 기억하면서 사용 사례에 가장 적합한 모델을 결정할 수 있나요? 출력 정확도의 차이가 생성된 토큰 수와 그로 인한 비용 차이보다 더 큰 가치를 가지나요?
 
 ## 정리
 
