@@ -91,7 +91,7 @@ Azure Cloud Shell에서 Azure AI 파운드리 프로젝트에 연결하고 생�
     ```
    python -m venv labenv
    ./labenv/bin/Activate.ps1
-   pip install python-dotenv openai azure-identity azure-ai-projects azure-ai-inference azure-monitor-opentelemetry
+   pip install python-dotenv openai azure-identity azure-ai-projects opentelemetry-instrumentation-openai-v2 azure-monitor-opentelemetry
     ```
 
 1. 제공된 구성 파일을 열려면 다음 명령을 입력합니다.
